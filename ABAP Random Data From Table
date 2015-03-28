@@ -1,0 +1,48 @@
+*&---------------------------------------------------------------------*
+*& Report  Z_TYPE_POOLS_07
+*&
+*&---------------------------------------------------------------------*
+*&
+*&
+*&---------------------------------------------------------------------*
+
+REPORT  z_random_icon.
+TYPE-POOLS: abap, icon.
+
+DATA: wa_icons TYPE icon,
+      t_icons TYPE TABLE OF icon,
+      v_icons_id TYPE icon-id,
+      v_icons_count TYPE i,
+      v_icons_position type i.
+
+
+
+SELECT COUNT(*) FROM icon INTO v_icons_count.
+
+DO 3 TIMES.
+*The function must be called 3 times to take effect.
+CALL FUNCTION 'RANDOM_I4'
+ EXPORTING
+   RND_MIN         = 1
+   RND_MAX         = v_icons_count
+ IMPORTING
+   RND_VALUE       = v_icons_position.
+
+  IF sy-subrc <> 0.
+    MESSAGE 'Error while getting the data!' TYPE 'S' DISPLAY LIKE 'E'.
+  ENDIF.
+
+ENDDO.
+
+*Select in ICON table using a random number as INDEX.
+SELECT  id
+  FROM icon
+ INTO TABLE t_icons.
+
+
+*Inserting the data into a WA.
+  READ TABLE t_icons into wa_icons INDEX v_icons_position.
+
+*Printing the data.
+WRITE wa_icons-id.
+
